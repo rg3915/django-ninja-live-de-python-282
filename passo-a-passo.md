@@ -461,7 +461,7 @@ class Task(models.Model):
     )
 
     class Meta:
-        ordering = ('title',)
+        ordering = ('pk',)
         verbose_name = 'tarefa'
         verbose_name_plural = 'tarefas'
 
@@ -491,7 +491,23 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
-> Adicionar dados pelo Admin.
+Vamos adicionar dados pelo shell_plus.
+
+```python
+user = User.objects.first()
+
+titles = [
+    'Estudar Python',
+    'Estudar Django',
+    'Estudar Django Ninja',
+]
+
+for title in titles:
+    Task.objects.create(title=title, user=user)
+
+# E vamos criar uma sem User.
+Task.objects.create(title='Convidado para a próxima Live')
+```
 
 
 Edite `core/api.py`
@@ -700,6 +716,36 @@ http://localhost:8000/api/v1/tasks?limit=2&offset=0
 http://localhost:8000/api/v1/tasks?limit=2&offset=2
 
 [pagination](https://django-ninja.dev/guides/response/pagination/)
+
+## Campo de Busca
+
+Edite `core/schemas.py`
+
+```python
+# core/schemas.py
+from ninja import FilterSchema
+from typing import Optional
+
+class TaskFilterSchema(FilterSchema):
+    title: Optional[str] = Field(None, q='title__icontains')
+```
+
+Edite `core/api.py`
+
+```python
+# core/api.py
+from ninja import Query
+
+from .schemas import TaskFilterSchema
+
+
+@router.get('tasks', response=list[TaskSchema], tags=['Tasks'])
+@paginate
+def list_tasks(request, filters: TaskFilterSchema = Query(...)):
+    tasks = Task.objects.all()
+    return filters.filter(tasks)
+```
+
 
 ## CRUD
 

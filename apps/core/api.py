@@ -1,11 +1,11 @@
 from http import HTTPStatus
-from ninja import Router
+from ninja import Query, Router
 from ninja.pagination import paginate
 
 from django.contrib.auth.models import User
 
 from .models import Task
-from .schemas import StatusSchema, UserSchema, UserSimpleSchema, UserWithGroupSchema, TaskSchema
+from .schemas import StatusSchema, UserSchema, UserSimpleSchema, UserWithGroupSchema, TaskSchema, TaskFilterSchema
 
 
 router = Router(tags=['Core'])
@@ -39,5 +39,6 @@ def list_users(request):
 
 @router.get('tasks', response=list[TaskSchema], tags=['Tasks'])
 @paginate
-def list_tasks(request):
-    return Task.objects.all()
+def list_tasks(request, filters: TaskFilterSchema = Query(...)):
+    tasks = Task.objects.all()
+    return filters.filter(tasks)

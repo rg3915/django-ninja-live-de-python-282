@@ -23,7 +23,7 @@ class Task(models.Model):
     )
 
     class Meta:
-        ordering = ('title',)
+        ordering = ('pk',)
         verbose_name = 'tarefa'
         verbose_name_plural = 'tarefas'
 

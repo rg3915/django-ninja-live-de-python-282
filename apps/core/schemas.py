@@ -1,5 +1,6 @@
-from ninja import Field, ModelSchema, Schema
+from ninja import FilterSchema, Field, ModelSchema, Schema
 from ninja.orm import create_schema
+from typing import Optional
 
 from django.contrib.auth.models import User
 
@@ -46,3 +47,7 @@ class TaskSchema(ModelSchema):
     @staticmethod
     def resolve_status_display(obj):
         return obj.get_status_display()
+
+
+class TaskFilterSchema(FilterSchema):
+    title: Optional[str] = Field(None, q='title__icontains')
