@@ -1,4 +1,4 @@
-from ninja import NinjaAPI, Redoc
+from ninja import NinjaAPI, Redoc  # noqa F401
 
 
 api = NinjaAPI()

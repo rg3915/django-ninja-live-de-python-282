@@ -5,7 +5,7 @@ from ninja.pagination import paginate
 from django.contrib.auth.models import User
 
 from .models import Task
-from .schemas import StatusSchema, UserSchema, UserSimpleSchema, UserWithGroupSchema, TaskSchema, TaskFilterSchema
+from .schemas import StatusSchema, UserSchema, UserSimpleSchema, UserWithGroupSchema, TaskSchema, TaskFilterSchema  # noqa F401
 
 
 router = Router(tags=['Core'])
