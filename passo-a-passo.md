@@ -1,3 +1,16 @@
+# Passo a passo
+
+## Instalando o Django
+
+```bash
+python -m venv .venv
+
+source .venv/bin/activate  # Linux
+# .venv\Scripts\activate  # Windows
+
+pip install django-ninja django-extensions python-decouple
+```
+
 ## Criando o projeto
 
 ```bash
@@ -84,6 +97,10 @@ urlpatterns += api_urlpatterns
 
 Edite `api.py`
 
+```
+touch apps/api.py
+```
+
 ```python
 # api.py
 from http import HTTPStatus
@@ -103,6 +120,8 @@ def healthcheck(request):
 ```
 
 A vantagem é que o Django Ninja já te dá o Swagger pronto.
+
+> Rode a aplicação.
 
 ## Redoc
 
@@ -202,6 +221,12 @@ pip freeze > requirements.txt
 Edite `pytest.ini`
 
 ```
+touch pytest.ini
+```
+
+```
+# Copiar tudo
+
 [pytest]
 DJANGO_SETTINGS_MODULE = apps.settings
 python_files = tests.py test_*.py *_tests.py
@@ -239,7 +264,6 @@ def test_healthcheck(client):
 
     assert response.status_code == HTTPStatus.OK
     assert response.json() == expected
-
 ```
 
 ### Rodando o teste
@@ -546,7 +570,7 @@ Edite `core/schemas.py`
 ```python
 # core/schemas.py
 class TaskSchema(ModelSchema):
-    user: UserSchema
+    user: UserSchema  # <---
 
     class Meta:
         model = Task
@@ -609,6 +633,23 @@ UserWithGroupSchema = create_schema(
 
 ### custom_fields on create_schema
 
+Entre no shell_plus.
+
+```python
+# Crie 2 grupos
+
+diretor, _ = Group.objects.get_or_create(name='Diretor')
+gerente, _ = Group.objects.get_or_create(name='Gerente')
+
+user = User.objects.create(
+    username='regis',
+    first_name='Regis',
+    last_name='Santos',
+)
+user.groups.add(diretor)
+user.groups.add(gerente)
+```
+
 Edite `core/schemas.py`
 
 ```python
@@ -632,11 +673,15 @@ Github: [get_full_name](https://github.com/django/django/blob/main/django/contri
 
 > Acesse `/api/v1/tasks` .
 
+> Deu erro!
+
 
 Edite `core/schemas.py`
 
 ```python
 # core/schemas.py
+from ninja import Field
+
 class UserSchema(ModelSchema):
     full_name: str = Field(None, alias='get_full_name')
     username: str = Field(None)
