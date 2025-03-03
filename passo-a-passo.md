@@ -55,7 +55,10 @@ class CoreConfig(AppConfig):
 Rode os comandos
 
 ```bash
-python contrib/env_gen.py
+echo SECRET_KEY=senha-super-secreta > .env
+
+# A partir do repositório, você pode rodar
+# python contrib/env_gen.py
 
 python manage.py migrate
 
@@ -177,6 +180,10 @@ def add(request, a: int, b: int):
     return {'result': a + b}
 ```
 
+Então, neste exemplo, nós temos o tipo de requisição, que é `GET`. A url, que é `/api/v1/add`. E **query params** (`?a=2&b=3`), que podemos explicar melhor mais pra frente.
+
+E na resposta temos: `status_code` **200** e *response body* `{"result": 5}`.
+
 
 ### Exemplo 2 - Único arquivo com um Schema
 
@@ -284,7 +291,7 @@ pytest -vv -s
     'healthcheck',
     response=StatusSchema,
     tags=['Health Check'],
-    summary='Health Check',
+    summary='Health Check Summary',
     description='Verificação de status que permite monitorar a saúde da API.'
 )
 def healthcheck(request):
@@ -366,7 +373,7 @@ router = Router(tags=['Core'])
     'healthcheck',
     response=StatusSchema,
     tags=['Health Check'],
-    summary='Health Check',
+    summary='Health Check Summary',
     description='Verificação de status que permite monitorar a saúde da API.'
 )
 def healthcheck(request):
@@ -450,6 +457,9 @@ Mas aqui nós temos uma falha grave: `__all__`
 
 > Mostrar como é retornado na API.
 
+**ATENÇÃO:** Veja que está mostrando a senha.
+
+
 #### Exclude
 
 ```python
@@ -517,6 +527,10 @@ python manage.py migrate
 
 Vamos adicionar dados pelo shell_plus.
 
+```bash
+python manage.py shell_plus
+```
+
 ```python
 user = User.objects.first()
 
@@ -528,9 +542,6 @@ titles = [
 
 for title in titles:
     Task.objects.create(title=title, user=user)
-
-# E vamos criar uma sem User.
-Task.objects.create(title='Convidado para a próxima Live')
 ```
 
 
@@ -631,6 +642,9 @@ UserWithGroupSchema = create_schema(
 )
 ```
 
+> Coloque alguns grupos pelo Admin.
+
+
 ### custom_fields on create_schema
 
 Entre no shell_plus.
@@ -648,6 +662,9 @@ user = User.objects.create(
 )
 user.groups.add(diretor)
 user.groups.add(gerente)
+
+# E vamos criar uma sem User.
+Task.objects.create(title='Convidado para a próxima Live')
 ```
 
 Edite `core/schemas.py`
@@ -664,7 +681,7 @@ UserWithGroupSchema = create_schema(
 )
 ```
 
-Github: [get_full_name](https://github.com/django/django/blob/main/django/contrib/auth/models.py#L493)
+Github: [get_full_name](https://github.com/django/django/blob/main/django/contrib/auth/models.py#L501)
 
 
 ### Field and alias
@@ -741,6 +758,11 @@ class TaskSchema(ModelSchema):
 ## Paginação
 
 O padrão é o LimitOffsetPagination.
+
+Se o `limit=5`, então o `offset` é 0, 5, 10, 15, ...
+Se o `limit=3`, então o `offset` é 0, 3, 6, 9, ...
+
+[DRF: Paginação](https://youtu.be/UqES8tphzsQ?si=ej3e26wj-vZ9iop-&t=257)
 
 Edite `core/api.py`
 
